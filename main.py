@@ -9,13 +9,13 @@ st.set_page_config(page_title="Excel to Tally", page_icon=":guardsman:", layout=
                    initial_sidebar_state="collapsed")
 newcmplist = []
 
-url = "http://localhost:9000"
+newurl = "http://localhost:9000"
 
 
 def get_company_names(xml_string):
     global svcurrentcompany
     i = 0
-    req = requests.post(url=url, data=xml_string)
+    req = requests.post(newurl="http://localhost:9000", data=xml_string)
     root = ET.fromstring(req.text.strip())
     for cmp in root.findall('./BODY/DATA/COLLECTION/COMPANY'):
         cmp_name = cmp.get('NAME')
@@ -46,7 +46,7 @@ def load_data(file_path):
 
 
 def payentry(vrdt, area, ledname, amt, narr):
-    url = "http://localhost:9000"
+    newurl = "http://localhost:9000"
 
     try:
         if amt == 0:
@@ -81,13 +81,13 @@ def payentry(vrdt, area, ledname, amt, narr):
         new_data += '</TALLYMESSAGE>'
         new_data += '</DATA></BODY></ENVELOPE>'
 
-        req = requests.post(url=url, data=new_data)
+        req = requests.post(url=newurl, data=new_data)
     except Exception as e:
         st.error(f"An error occured: {e}")
 
 
 def recentry(vrdt, area, ledname, amt, narr):
-    url = "http://localhost:9000"
+    newurl = "http://localhost:9000"
 
     try:
         if amt == 0:
@@ -122,13 +122,13 @@ def recentry(vrdt, area, ledname, amt, narr):
         new_data += '</TALLYMESSAGE>'
         new_data += '</DATA></BODY></ENVELOPE>'
 
-        req = requests.post(url=url, data=new_data)
+        req = requests.post(url=newurl, data=new_data)
     except Exception as e:
         st.error(f"An error occured: {e}")
 
 
 def pur_entry(vrdt, area, itemname, itemunit, qty, ratevar, ledname, narr, amt):
-    url = "http://localhost:9000"
+    newurl = "http://localhost:9000"
 
     try:
         if qty == 0:
@@ -176,13 +176,13 @@ def pur_entry(vrdt, area, itemname, itemunit, qty, ratevar, ledname, narr, amt):
         new_data += '</TALLYMESSAGE>'
         new_data += '</DATA></BODY></ENVELOPE>'
 
-        req = requests.post(url=url, data=new_data)
+        req = requests.post(url=newurl, data=new_data)
     except Exception as e:
         st.error(f"An error occured: {e}")
 
 
 def sales_entry(vrdt, area, itemname, itemunit, qty, ratevar, ledname, narr, amt):
-    url = "http://localhost:9000"
+    newurl = "http://localhost:9000"
 
     try:
         if qty == 0:
@@ -230,28 +230,10 @@ def sales_entry(vrdt, area, itemname, itemunit, qty, ratevar, ledname, narr, amt
         new_data += '</TALLYMESSAGE>'
         new_data += '</DATA></BODY></ENVELOPE>'
 
-        req = requests.post(url=url, data=new_data)
+        req = requests.post(url=newurl, data=new_data)
     except Exception as e:
         st.error(f"An error occured: {e}")
 
-
-def passvouchers(vrdt, vrtype, rec_pay, area, ratevar, itemunit, itemname, ledname, narr, amt, qty):
-    if amt != 0 or qty != 0 or rec_pay == "RECEIPTS":
-        sales_entry(vrdt, area, itemname, itemunit, qty, ratevar, ledname, narr, amt)
-    else:
-        if amt != 0 or qty == 0 or rec_pay == "RECEIPTS":
-            recentry(vrdt, area, ledname, amt, narr)
-
-    if amt != 0 or qty != 0 or rec_pay == "PURCHASE":
-        pur_entry(vrdt, area, itemname, itemunit, qty, ratevar, ledname, narr, amt)
-    else:
-        if amt != 0 or qty == 0 or rec_pay == "PURCHASE":
-            payentry(vrdt, area, ledname, amt, narr)
-
-    if rec_pay == "RECEIPTS" and vrtype == "SALES":
-        sales += 1
-
-    st.write(sales)
 
 
 def color_negative_red(val):
