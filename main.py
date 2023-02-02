@@ -26,8 +26,8 @@ def get_company_names(xml_string):
 
 
 xml_string = "<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE><ID>ListOfCompanies</ID></HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES><TDL><TDLMESSAGE><COLLECTION Name='ListOfCompanies'><TYPE>Company</TYPE><FETCH>Name,CompanyNumber</FETCH></COLLECTION></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>"
-company_names = get_company_names(xml_string)
-svcurrentcompany = st.selectbox("Select the Company", company_names)
+cmplist = get_company_names(xml_string)
+svcurrentcompany = st.selectbox("Select the Company", cmplist)
 
 
 @st.cache
