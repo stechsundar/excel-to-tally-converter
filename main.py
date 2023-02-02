@@ -15,7 +15,7 @@ newurl = "http://localhost:9000"
 def get_company_names(xml_string):
     global svcurrentcompany
     i = 0
-    req = requests.post(newurl="http://localhost:9000", data=xml_string)
+    req = requests.post(url="http://localhost:9000", data=xml_string)
     root = ET.fromstring(req.text.strip())
     for cmp in root.findall('./BODY/DATA/COLLECTION/COMPANY'):
         cmp_name = cmp.get('NAME')
