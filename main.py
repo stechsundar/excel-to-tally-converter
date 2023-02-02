@@ -4,19 +4,32 @@ import pandas as pd
 import requests
 import openpyxl
 import xml.etree.ElementTree as ET
+from time import sleep
 
 st.set_page_config(page_title="Excel to Tally", page_icon=":guardsman:", layout="wide",
                    initial_sidebar_state="collapsed")
 newcmplist = []
 
 newurl = "http://localhost:9000"
+global svcurrentcompany
+xmldata = "<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE><ID>ListOfCompanies</ID></HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES><TDL><TDLMESSAGE><COLLECTION Name='ListOfCompanies'><TYPE>Company</TYPE><FETCH>Name,CompanyNumber</FETCH></COLLECTION></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>"
 
 
-def get_company_names(xml_string):
-    global svcurrentcompany
+def get_company_names(xmldata):
     i = 0
-    req = requests.post(url="http://localhost:9000", data=xml_string)
-    root = ET.fromstring(req.text.strip())
+    page = ''
+    while page == '':
+        try:
+            page = requests.get(newurl, data=xmldata)
+            break
+        except ConnectionError:
+            st.write("Connection refused by the server..")
+            st.write("Let me sleep for 5 seconds")
+            st.write("ZZzzzz...")
+            sleep(5)
+            st.write("Was a nice sleep, now let me continue...")
+            continue
+    root = ET.fromstring(page.text.strip())
     for cmp in root.findall('./BODY/DATA/COLLECTION/COMPANY'):
         cmp_name = cmp.get('NAME')
         newcmplist.append(cmp_name)
@@ -25,9 +38,8 @@ def get_company_names(xml_string):
     return newcmplist
 
 
-xml_string = "<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE><ID>ListOfCompanies</ID></HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES><TDL><TDLMESSAGE><COLLECTION Name='ListOfCompanies'><TYPE>Company</TYPE><FETCH>Name,CompanyNumber</FETCH></COLLECTION></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>"
-cmplist = get_company_names(xml_string)
-svcurrentcompany = st.selectbox("Select the Company", cmplist)
+newcmplist = get_company_names(xmldata)
+svcurrentcompany = st.selectbox("Select the Company", newcmplist)
 
 
 @st.cache
@@ -81,7 +93,19 @@ def payentry(vrdt, area, ledname, amt, narr):
         new_data += '</TALLYMESSAGE>'
         new_data += '</DATA></BODY></ENVELOPE>'
 
-        req = requests.post(url=newurl, data=new_data)
+        page = ''
+        while page == '':
+            try:
+                page = requests.post(url=newurl, data=new_data)
+                break
+            except ConnectionError:
+                print("Connection refused by the server..")
+                print("Let me sleep for 5 seconds")
+                print("ZZzzzz...")
+                sleep(5)
+                print("Was a nice sleep, now let me continue...")
+                continue
+
     except Exception as e:
         st.error(f"An error occured: {e}")
 
@@ -122,7 +146,18 @@ def recentry(vrdt, area, ledname, amt, narr):
         new_data += '</TALLYMESSAGE>'
         new_data += '</DATA></BODY></ENVELOPE>'
 
-        req = requests.post(url=newurl, data=new_data)
+        page = ''
+        while page == '':
+            try:
+                page = requests.post(url=newurl, data=new_data)
+                break
+            except ConnectionError:
+                print("Connection refused by the server..")
+                print("Let me sleep for 5 seconds")
+                print("ZZzzzz...")
+                sleep(5)
+                print("Was a nice sleep, now let me continue...")
+                continue
     except Exception as e:
         st.error(f"An error occured: {e}")
 
@@ -176,7 +211,18 @@ def pur_entry(vrdt, area, itemname, itemunit, qty, ratevar, ledname, narr, amt):
         new_data += '</TALLYMESSAGE>'
         new_data += '</DATA></BODY></ENVELOPE>'
 
-        req = requests.post(url=newurl, data=new_data)
+        page = ''
+        while page == '':
+            try:
+                page = requests.post(url=newurl, data=new_data)
+                break
+            except ConnectionError:
+                print("Connection refused by the server..")
+                print("Let me sleep for 5 seconds")
+                print("ZZzzzz...")
+                sleep(5)
+                print("Was a nice sleep, now let me continue...")
+                continue
     except Exception as e:
         st.error(f"An error occured: {e}")
 
@@ -230,10 +276,20 @@ def sales_entry(vrdt, area, itemname, itemunit, qty, ratevar, ledname, narr, amt
         new_data += '</TALLYMESSAGE>'
         new_data += '</DATA></BODY></ENVELOPE>'
 
-        req = requests.post(url=newurl, data=new_data)
+        page = ''
+        while page == '':
+            try:
+                page = requests.post(url=newurl, data=new_data)
+                break
+            except ConnectionError:
+                print("Connection refused by the server..")
+                print("Let me sleep for 5 seconds")
+                print("ZZzzzz...")
+                sleep(5)
+                print("Was a nice sleep, now let me continue...")
+                continue
     except Exception as e:
         st.error(f"An error occured: {e}")
-
 
 
 def color_negative_red(val):
@@ -299,4 +355,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
